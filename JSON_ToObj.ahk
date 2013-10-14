@@ -33,7 +33,7 @@ json_toobj( str ) {
 	; Decode entities
 		StringReplace, key, key, \%quot%, %quot%, A
 		StringReplace, key, key, \b, % Chr(08), A
-		StringReplace, key, key, \key, % A_Tab, A
+		StringReplace, key, key, \t, % A_Tab, A
 		StringReplace, key, key, \n, `n, A
 		StringReplace, key, key, \f, % Chr(12), A
 		StringReplace, key, key, \r, `r, A

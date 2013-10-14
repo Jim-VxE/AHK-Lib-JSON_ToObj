@@ -43,5 +43,5 @@ json_fromobj( obj ) {
 				. Chr( ( str & 15 ) + ( ( str & 15 ) < 10 ? 48 : 55 ) )
 		StringReplace, obj, obj, % key, % val, A
 	}
-	return """" obj """"
+	return RegexMatch( obj, "\W" ) ? """" obj """" : obj
 } ; json_fromobj( obj )
