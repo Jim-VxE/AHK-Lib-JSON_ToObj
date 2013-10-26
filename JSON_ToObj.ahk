@@ -10,7 +10,7 @@ json_toobj( str ) {
 	keys := [] ; stack
 	isarrays := [] ; stack
 	literals := [] ; queue
-	y := 0
+	y := nest := 0
 
 ; First pass swaps out literal strings so we can parse the markup easily
 	StringGetPos, z, str, %quot% ; initial seek
@@ -47,19 +47,15 @@ json_toobj( str ) {
 		StringGetPos, z, str, %quot%,, % z + 1 ; seek
 	}
 
-; The last close bracket is superfluous. Removing it reduces the need for dummy objects on our stack
-	StringGetPos, x, str, ], R
-	StringGetPos, y, str, }, R
-	StringLeft, str, str, x < y ? y : x
+; Second pass parses the markup and builds the object iteratively, swapping placeholders as they are encountered
 	key := isarray := 1
 
-; Second pass parses the markup and builds the object iteratively, swapping placeholders as they are encountered
-	; The outer loop splits the blob into paths at markers where nest level increases
+	; The outer loop splits the blob into paths at markers where nest level decreases
 	Loop Parse, str, % "]}"
 	{
 		StringReplace, str, A_LoopField, [, [], A ; mark any array open-brackets
 
-		; This inner loop splits the path into segments at markers that signal nest level decreases
+		; This inner loop splits the path into segments at markers that signal nest level increases
 		Loop Parse, str, % "[{"
 		{
 			; The first segment might contain members that belong to the previous object
@@ -91,14 +87,19 @@ json_toobj( str ) {
 						else if ( A_Index = 2 && A_LoopField != "" )
 							obj[key] := A_LoopField = quot ? literals.remove(1) : A_LoopField
 			}
+			nest += A_Index > 1
 		} ; Loop Parse, str, % "[{"
+
+		If !--nest
+			Break
 
 		; Insert the newly closed object into the one on top of the stack, then pop the stack
 		pbj := obj
 		obj := objs.remove()
 		obj[key := keys.remove()] := pbj
 		isarray := isarrays.remove()
+
 	} ; Loop Parse, str, % "]}"
 
-	Return pbj
+	Return obj
 } ; json_toobj( str )
