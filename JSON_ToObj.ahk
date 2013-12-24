@@ -67,7 +67,6 @@ json_toobj( str ) {
 				keys.insert( key )
 				obj := {}
 				isarray := key := Asc( A_LoopField ) = 93
-					
 			}
 
 			; arrrrays are made by pirates and they have index keys
@@ -97,7 +96,8 @@ json_toobj( str ) {
 		pbj := obj
 		obj := objs.remove()
 		obj[key := keys.remove()] := pbj
-		isarray := isarrays.remove()
+		If ( isarray := isarrays.remove() )
+			key++
 
 	} ; Loop Parse, str, % "]}"
 

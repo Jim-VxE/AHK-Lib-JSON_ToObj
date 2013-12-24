@@ -33,7 +33,7 @@ json_fromobj( obj ) {
 	StringReplace, obj, obj, % Chr(12), \f, A
 	StringReplace, obj, obj, `r, \r, A
 	StringReplace, obj, obj, ", \", A
-	StringReplace, obj, obj, /,, \/ A
+	StringReplace, obj, obj, /, \/, A
 	While RegexMatch( obj, "[^\x20-\x7e]", key )
 	{
 		str := Asc( key )
